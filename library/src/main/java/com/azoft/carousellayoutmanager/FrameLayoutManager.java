@@ -532,7 +532,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
 
         } else {
             final int firstVisible = Math.max(centerItem - mLayoutHelper.mMaxVisibleItems, 0);
-            final int lastVisible = Math.min(centerItem + mLayoutHelper.mMaxVisibleItems , mItemsCount - 1);
+            final int lastVisible = Math.min(centerItem + mLayoutHelper.mMaxVisibleItems, mItemsCount - 1);
             final int layoutCount = lastVisible - firstVisible + 1;
 
             mLayoutHelper.initLayoutOrder(layoutCount);
@@ -687,28 +687,6 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
             currentScrollPosition -= count;
         }
         return currentScrollPosition;
-    }
-
-    /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/1 0001 22:54
-     * <p>
-     * 方法功能：设置item点击事件
-     */
-
-    public void setOnItemClickListener(final OnItemClickListener listener) {
-        //当子view附属到窗口状态变化的时候
-        listener.mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
-            @Override
-            public void onChildViewAttachedToWindow(final View view) {
-                view.setOnClickListener(listener.mOnClickListener);
-            }
-
-            @Override
-            public void onChildViewDetachedFromWindow(final View view) {
-                view.setOnClickListener(null);
-            }
-        });
     }
 
 
@@ -891,5 +869,20 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
                 return new CarouselSavedState[i];
             }
         };
+    }
+
+    /**
+     * 处理item点击事件
+     *
+     * @return 是否是中间点击了
+     */
+    public static boolean handleItemClick(RecyclerView mRecyclerView, View view, int position) {
+        FrameLayoutManager layoutManager = (FrameLayoutManager) mRecyclerView.getLayoutManager();
+        if (position == layoutManager.getCenterItemPosition()) {
+            return true;
+        } else {
+            mRecyclerView.smoothScrollToPosition(layoutManager.getPosition(view));
+            return false;
+        }
     }
 }

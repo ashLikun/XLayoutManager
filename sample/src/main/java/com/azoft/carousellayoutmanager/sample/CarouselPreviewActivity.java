@@ -3,7 +3,6 @@ package com.azoft.carousellayoutmanager.sample;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,17 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.azoft.carousellayoutmanager.FrameScrollListener;
 import com.azoft.carousellayoutmanager.DefaultZoomOnLayoutListener;
 import com.azoft.carousellayoutmanager.FrameLayoutManager;
-import com.azoft.carousellayoutmanager.OnItemClickListener;
+import com.azoft.carousellayoutmanager.FrameScrollListener;
 import com.azoft.carousellayoutmanager.sample.databinding.ActivityCarouselPreviewBinding;
 import com.azoft.carousellayoutmanager.sample.databinding.ItemViewBinding;
 
 import java.util.Random;
 
 public class CarouselPreviewActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +28,7 @@ public class CarouselPreviewActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbar);
 
         final TestAdapter adapter = new TestAdapter();
+        final TestAdapter adapter2 = new TestAdapter();
 
         // create layout manager with needed params: vertical, cycle
         initRecyclerView(binding.listHorizontal, new FrameLayoutManager(FrameLayoutManager.HORIZONTAL, false), adapter);
@@ -81,14 +79,9 @@ public class CarouselPreviewActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         // enable center post scrolling
         recyclerView.addOnScrollListener(new FrameScrollListener());
-        // enable center post touching on item and item click listener
 
-        layoutManager.setOnItemClickListener(new OnItemClickListener(recyclerView) {
-            @Override
-            protected void onCenterItemClicked(@NonNull RecyclerView recyclerView, @NonNull FrameLayoutManager carouselLayoutManager, @NonNull View v) {
-                Toast.makeText(CarouselPreviewActivity.this, "aaaaa" + carouselLayoutManager.getCenterItemPosition(), Toast.LENGTH_SHORT).show();
-            }
-        });
+
+
         layoutManager.addOnItemSelectionListener(new FrameLayoutManager.OnCenterItemSelectionListener() {
 
             @Override
@@ -100,7 +93,7 @@ public class CarouselPreviewActivity extends AppCompatActivity {
         });
     }
 
-    private static final class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
+    private final class TestAdapter extends RecyclerView.Adapter<TestViewHolder> {
 
         @SuppressWarnings("UnsecureRandomNumberGeneration")
         private final Random mRandom = new Random();
@@ -128,6 +121,15 @@ public class CarouselPreviewActivity extends AppCompatActivity {
             holder.mItemViewBinding.cItem1.setText(String.valueOf(mPosition[position]));
             holder.mItemViewBinding.cItem2.setText(String.valueOf(mPosition[position]));
             holder.itemView.setBackgroundColor(mColors[position]);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    if(FrameLayoutManager.handleItemClick(v, position)) {
+//                        Toast.makeText(v.getContext(), "aaaaa" + position, Toast.LENGTH_SHORT).show();
+//                    }
+                }
+            });
+
         }
 
         @Override
