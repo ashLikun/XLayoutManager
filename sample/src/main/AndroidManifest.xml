@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.azoft.carousellayoutmanager.sample"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ashlikun.xlayoutmanage.sample">
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity
-            android:name=".CarouselPreviewActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,6 +18,20 @@
             </intent-filter>
         </activity>
 
+        <!-- ********************************** 用于演示的Activity ********************************** -->
+        <!-- SkidRightLayoutManager -->
+        <activity
+            android:name=".activity.SkidRightActivity_1"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.Skid_1" />
+        <activity
+            android:name=".activity.SkidRightActivity_2"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.Skid_2" />
+        <!-- ViewPagerLayoutManager-->
+        <activity
+            android:name=".activity.ViewPagerLayoutManagerActivity"
+            android:theme="@style/AppTheme.Skid_1"></activity>
     </application>
 
 </manifest>

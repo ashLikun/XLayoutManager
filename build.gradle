@@ -2,18 +2,18 @@
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
     }
 }
 
 allprojects {
     repositories {
+        google()
         jcenter()
     }
 }
@@ -22,12 +22,16 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 ext {
-    compileSdkVersion = 25
-    buildToolsVersion = "25.0.3"
-    designVersion = "com.android.support:design:25.2.0"
-    v4Version = "com.android.support:support-v4:25.2.0"
-    targetSdkVersion = 19
-    minSdkVersion = 14
+    superVersion = "27.1.1"
+    compileSdkVersion = 27
+    buildToolsVersion = "27.0.3"
+    designVersion = "com.android.support:design:" + superVersion
+    v4Version = "com.android.support:support-v4:" + superVersion
+    v7AppCompat = "com.android.support:appcompat-v7:" + superVersion
+    recyclerview = "com.android.support:recyclerview-v7:" + superVersion
+    v13Version = "com.android.support:support-v13:" + superVersion
+    targetSdkVersion = 24
+    minSdkVersion = 16
     versionCode = 1
-    versionName = "0.1"
+    versionName = "0.0.1"
 }

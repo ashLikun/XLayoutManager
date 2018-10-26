@@ -16,12 +16,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    configurations {
-        javadocDeps
-    }
-/**
- * aar文件的编译
- */
+    /**
+     * aar文件的编译
+     */
     repositories {
         flatDir {
             dirs 'libs'
@@ -33,10 +30,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:support-v4:25.0.0'
-    compile 'com.android.support:design:25.0.0'
-    compile 'com.android.support:recyclerview-v7:25.0.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation rootProject.ext.recyclerview
 }
-
 apply from: '../maven.gradle'
