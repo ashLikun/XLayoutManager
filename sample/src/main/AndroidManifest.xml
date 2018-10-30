@@ -32,6 +32,9 @@
         <activity
             android:name=".activity.ViewPagerLayoutManagerActivity"
             android:theme="@style/AppTheme.Skid_1"></activity>
+        <activity
+            android:name=".activity.FrameActivity"
+            android:theme="@style/AppTheme.Skid_1"></activity>
     </application>
 
 </manifest>

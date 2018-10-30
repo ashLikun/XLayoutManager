@@ -50,6 +50,12 @@ public class SkidRightActivity_1 extends AppCompatActivity {
         mSkidRightLayoutManager = new SkidRightLayoutManager(1.5f, 0.85f);
         mRecyclerView.setLayoutManager(mSkidRightLayoutManager);
         mRecyclerView.setAdapter(new MyAdapter());
+        findViewById(R.id.action1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRecyclerView.smoothScrollToPosition(3);
+            }
+        });
     }
 
     /**
@@ -66,7 +72,7 @@ public class SkidRightActivity_1 extends AppCompatActivity {
                 R.mipmap.skid_right_7,
 
         };
-        String[] titles = {"Acknowl", "Belief", "Confidence", "Dreaming", "Happiness", "Confidence"};
+        String[] titles = {"1Acknowl", "2Belief", "3Confidence", "4Dreaming", "5Happiness", "6Confidence"};
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

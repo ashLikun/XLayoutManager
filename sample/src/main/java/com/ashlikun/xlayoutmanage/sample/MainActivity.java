@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.widget.TextView;
 
+import com.ashlikun.xlayoutmanage.sample.activity.FrameActivity;
 import com.ashlikun.xlayoutmanage.sample.activity.SkidRightActivity_1;
 import com.ashlikun.xlayoutmanage.sample.activity.ViewPagerLayoutManagerActivity;
 import com.ashlikun.xlayoutmanage.sample.fragment.EchelonFragment;
@@ -101,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.item_4:
                 startActivity(new Intent(MainActivity.this, ViewPagerLayoutManagerActivity.class));
+                break;
+            case R.id.item_5:
+                startActivity(new Intent(MainActivity.this, FrameActivity.class));
                 break;
 
         }

@@ -10,8 +10,14 @@ package com.ashlikun.xlayoutmanage.frame;
 
 public class ItemTransformation {
 
+    /**
+     * 缩放的信息
+     */
     final float mScaleX;
     final float mScaleY;
+    /**
+     * 移动的信息
+     */
     final float mTranslationX;
     final float mTranslationY;
 

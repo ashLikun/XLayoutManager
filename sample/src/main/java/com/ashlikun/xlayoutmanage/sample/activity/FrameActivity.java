@@ -1,74 +1,61 @@
-package com.ashlikun.xlayoutmanage.sample;
+package com.ashlikun.xlayoutmanage.sample.activity;
 
-import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.ashlikun.xlayoutmanage.frame.DefaultZoomOnLayoutListener;
 import com.ashlikun.xlayoutmanage.frame.FrameLayoutManager;
-import com.ashlikun.xlayoutmanage.frame.FrameScrollListener;
-import com.ashlikun.xlayoutmanage.sample.databinding.ActivityCarouselPreviewBinding;
+import com.ashlikun.xlayoutmanage.sample.R;
 import com.ashlikun.xlayoutmanage.sample.databinding.ItemViewBinding;
 
 import java.util.Random;
 
-public class CarouselPreviewActivity extends AppCompatActivity {
+public class FrameActivity extends AppCompatActivity {
+    private RecyclerView listVertical;
+    private RecyclerView listHorizontal;
+    private FloatingActionButton action1;
+    private FloatingActionButton action2;
+    final TestAdapter adapter = new TestAdapter(false);
+    final TestAdapter adapterVertical = new TestAdapter(true);
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final ActivityCarouselPreviewBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_carousel_preview);
+        setContentView(R.layout.activity_carousel_preview);
+        listVertical = findViewById(R.id.list_vertical);
+        listHorizontal = findViewById(R.id.list_horizontal);
+        action1 = findViewById(R.id.action1);
+        action2 = findViewById(R.id.action2);
 
-        setSupportActionBar(binding.toolbar);
 
-        final TestAdapter adapter = new TestAdapter();
-        final TestAdapter adapter2 = new TestAdapter();
-
-        // create layout manager with needed params: vertical, cycle
-        initRecyclerView(binding.listHorizontal, new FrameLayoutManager(FrameLayoutManager.HORIZONTAL, false), adapter);
-        initRecyclerView(binding.listVertical, new FrameLayoutManager(FrameLayoutManager.VERTICAL, true), adapter);
-
-        // fab button will add element to the end of the list
-        binding.fabScroll.setOnClickListener(new View.OnClickListener() {
+        action1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View v) {
-/*
-                final int itemToRemove = adapter.mItemsCount;
-                if (10 != itemToRemove) {
-                    adapter.mItemsCount++;
-                    adapter.notifyItemInserted(itemToRemove);
-                }
-*/
-                binding.listHorizontal.smoothScrollToPosition(adapter.getItemCount() - 2);
-                binding.listVertical.smoothScrollToPosition(adapter.getItemCount() - 2);
+            public void onClick(View v) {
+                listHorizontal.smoothScrollToPosition(adapter.getItemCount() - 2);
+                // listVertical.smoothScrollToPosition(adapter.getItemCount() - 2);
             }
         });
-
-        // fab button will remove element from the end of the list
-        binding.fabChangeData.setOnClickListener(new View.OnClickListener() {
+        action2.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View v) {
-/*
-                final int itemToRemove = adapter.mItemsCount - 1;
-                if (0 <= itemToRemove) {
-                    adapter.mItemsCount--;
-                    adapter.notifyItemRemoved(itemToRemove);
-                }
-*/
-                binding.listHorizontal.smoothScrollToPosition(1);
-                binding.listVertical.smoothScrollToPosition(1);
+            public void onClick(View v) {
+                listHorizontal.scrollToPosition(1);
+                listVertical.scrollToPosition(1);
             }
         });
+        initRecyclerView(listHorizontal, new FrameLayoutManager(FrameLayoutManager.HORIZONTAL, false), adapter);
+        initRecyclerView(listVertical, new FrameLayoutManager(FrameLayoutManager.VERTICAL, true), adapterVertical);
+
     }
 
     private void initRecyclerView(final RecyclerView recyclerView, final FrameLayoutManager layoutManager, final TestAdapter adapter) {
         // enable zoom effect. this line can be customized
-        layoutManager.setOnLayoutListener(new DefaultZoomOnLayoutListener());
         layoutManager.setMaxVisibleItems(3);
 
         recyclerView.setLayoutManager(layoutManager);
@@ -77,10 +64,6 @@ public class CarouselPreviewActivity extends AppCompatActivity {
         // sample adapter with random data
         recyclerView.setAdapter(adapter);
         // enable center post scrolling
-        recyclerView.addOnScrollListener(new FrameScrollListener());
-
-
-
         layoutManager.addOnItemSelectionListener(new FrameLayoutManager.OnCenterItemSelectionListener() {
 
             @Override
@@ -99,8 +82,10 @@ public class CarouselPreviewActivity extends AppCompatActivity {
         private final int[] mColors;
         private final int[] mPosition;
         private int mItemsCount = 10;
+        private boolean isVertical = false;
 
-        TestAdapter() {
+        TestAdapter(boolean b) {
+            this.isVertical = b;
             mColors = new int[mItemsCount];
             mPosition = new int[mItemsCount];
             for (int i = 0; mItemsCount > i; ++i) {
@@ -123,9 +108,9 @@ public class CarouselPreviewActivity extends AppCompatActivity {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    if(FrameLayoutManager.handleItemClick(v, position)) {
-//                        Toast.makeText(v.getContext(), "aaaaa" + position, Toast.LENGTH_SHORT).show();
-//                    }
+                    if (FrameLayoutManager.handleItemClick(isVertical ? listVertical : listHorizontal, v, position)) {
+                        Toast.makeText(v.getContext(), isVertical ? "垂直的点击" : "水平的点击" + position, Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 

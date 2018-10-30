@@ -10,7 +10,6 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -36,7 +35,7 @@ import java.util.List;
  * <br />
  */
 public class FrameLayoutManager extends RecyclerView.LayoutManager implements RecyclerView.SmoothScroller.ScrollVectorProvider {
-
+    private FrameSnapHelper frameSnapHelper;
     public static final int HORIZONTAL = OrientationHelper.HORIZONTAL;
     public static final int VERTICAL = OrientationHelper.VERTICAL;
 
@@ -51,7 +50,6 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     private final int mOrientation;
     private final boolean mIsLooper;
 
-    private int mPendingScrollPosition;
 
     private final LayoutHelper mLayoutHelper = new LayoutHelper(MAX_VISIBLE_ITEMS);
 
@@ -72,16 +70,17 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         if (HORIZONTAL != orientation && VERTICAL != orientation) {
             throw new IllegalArgumentException("orientation should be HORIZONTAL or VERTICAL");
         }
+        mViewOnLayout = new DefaultZoomOnLayoutListener();
+        frameSnapHelper = new FrameSnapHelper();
         mOrientation = orientation;
         mIsLooper = isLooper;
-        mPendingScrollPosition = INVALID_POSITION;
     }
 
     /**
      * 作者　　: 李坤
      * 创建时间: 2017/8/1 0001 22:28
      * <p>
-     * 方法功能：当子view layou前
+     * 方法功能：当子view layou前,用于自定义view的布局
      */
     public void setOnLayoutListener(@Nullable final OnLayoutListener postLayoutListener) {
         mViewOnLayout = postLayoutListener;
@@ -94,7 +93,6 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
      * <p>
      * 方法功能：中间item选择事件
      */
-
     public void addOnItemSelectionListener(@NonNull final OnCenterItemSelectionListener onCenterItemSelectionListener) {
         mOnCenterItemSelectionListeners.add(onCenterItemSelectionListener);
     }
@@ -176,6 +174,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         return mCenterItemPosition;
     }
 
+
     /**
      * 作者　　: 李坤
      * 创建时间: 2017/8/2 0002 21:08
@@ -187,7 +186,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         if (0 > position) {
             throw new IllegalArgumentException("position can't be less then 0. position is : " + position);
         }
-        mPendingScrollPosition = position;
+        mLayoutHelper.mScrollOffset = calculateScrollForSelectingPosition(position);
         requestLayout();
     }
 
@@ -206,7 +205,8 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
                 if (!canScrollVertically()) {
                     return 0;
                 }
-                return getOffsetForCurrentView(view);
+                //距离当前position左边为正数，右边为负数
+                return getOffsetForCurrentView2(view);
             }
 
             @Override
@@ -215,57 +215,23 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
                 if (!canScrollHorizontally()) {
                     return 0;
                 }
-                return getOffsetForCurrentView(view);
+                //距离当前position左边为正数，右边为负数
+                return getOffsetForCurrentView2(view);
             }
         };
         linearSmoothScroller.setTargetPosition(position);
         startSmoothScroll(linearSmoothScroller);
     }
 
-    /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:19
-     * <p>
-     * 方法功能：计算中间距离指定目标的距离
-     */
-
-    @Override
-    public PointF computeScrollVectorForPosition(final int targetPosition) {
-        if (0 == getChildCount()) {
-            return null;
-        }
-        final float directionDistance = getScrollDirection(targetPosition);
-        final int direction = (int) -Math.signum(directionDistance);
-        if (HORIZONTAL == mOrientation) {
-            return new PointF(direction, 0);
-        } else {
-            return new PointF(0, direction);
-        }
-    }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:21
-     * <p>
-     * 方法功能：计算中间距离指定目标的距离
+     * 监听竖直方向的相对偏移量
+     *
+     * @param dy
+     * @param recycler
+     * @param state
+     * @return
      */
-    private float getScrollDirection(final int targetPosition) {
-        final float currentScrollPosition = makeScrollPositionInRange0ToCount(getCurrentScrollPosition(), mItemsCount);
-
-        if (mIsLooper) {
-            final float t1 = currentScrollPosition - targetPosition;
-            final float t2 = Math.abs(t1) - mItemsCount;
-            if (Math.abs(t1) > Math.abs(t2)) {
-                return Math.signum(t1) * t2;
-            } else {
-                return t1;
-            }
-        } else {
-            return currentScrollPosition - targetPosition;
-        }
-    }
-
-    //垂直滚动指定的距离
     @Override
     public int scrollVerticallyBy(final int dy, @NonNull final RecyclerView.Recycler recycler, @NonNull final RecyclerView.State state) {
         if (HORIZONTAL == mOrientation) {
@@ -274,7 +240,14 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         return scrollBy(dy, recycler, state);
     }
 
-    //水平滚动指定的距离
+    /**
+     * 监听水平方向的相对偏移量
+     *
+     * @param dx
+     * @param recycler
+     * @param state
+     * @return
+     */
     @Override
     public int scrollHorizontallyBy(final int dx, final RecyclerView.Recycler recycler, final RecyclerView.State state) {
         if (VERTICAL == mOrientation) {
@@ -283,7 +256,14 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         return scrollBy(dx, recycler, state);
     }
 
-    //滚动指定的距离
+    /**
+     * 滚动指定的距离
+     *
+     * @param diff
+     * @param recycler
+     * @param state
+     * @return
+     */
     @CallSuper
     protected int scrollBy(final int diff, @NonNull final RecyclerView.Recycler recycler, @NonNull final RecyclerView.State state) {
         if (null == mDecoratedChildWidth || null == mDecoratedChildHeight) {
@@ -311,16 +291,18 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
             final int maxOffset = getMaxScrollOffset();
 
             if (0 > mLayoutHelper.mScrollOffset + diff) {
-                resultScroll = -mLayoutHelper.mScrollOffset; //to make it 0
+                //to make it 0
+                resultScroll = -mLayoutHelper.mScrollOffset;
             } else if (mLayoutHelper.mScrollOffset + diff > maxOffset) {
-                resultScroll = maxOffset - mLayoutHelper.mScrollOffset; //to make it maxOffset
+                //to make it maxOffset
+                resultScroll = maxOffset - mLayoutHelper.mScrollOffset;
             } else {
                 resultScroll = diff;
             }
         }
         if (0 != resultScroll) {
             mLayoutHelper.mScrollOffset += resultScroll;
-            fillData(recycler, state, false);
+            fillData(recycler, state);
         }
         return resultScroll;
     }
@@ -339,16 +321,19 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         removeAllViews();
     }
 
-    @SuppressWarnings("RefusedBequest")
     @Override
-    @CallSuper
+    public void onAttachedToWindow(RecyclerView view) {
+        super.onAttachedToWindow(view);
+        frameSnapHelper.attachToRecyclerView(view);
+    }
+
+    @Override
     public void onLayoutChildren(@NonNull final RecyclerView.Recycler recycler, @NonNull final RecyclerView.State state) {
         if (0 == state.getItemCount()) {
             removeAndRecycleAllViews(recycler);
             selectItemCenterPosition(INVALID_POSITION);
             return;
         }
-        boolean childMeasuringNeeded = false;
         if (null == mDecoratedChildWidth) {
             final View view = recycler.getViewForPosition(0);
             addView(view);
@@ -358,37 +343,37 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
             mDecoratedChildHeight = getDecoratedMeasuredHeight(view);
             removeAndRecycleView(view, recycler);
 
-            if (INVALID_POSITION == mPendingScrollPosition && null == mPendingCarouselSavedState) {
-                mPendingScrollPosition = mCenterItemPosition;
-            }
-
-            childMeasuringNeeded = true;
         }
-
-        if (INVALID_POSITION != mPendingScrollPosition) {
-            final int itemsCount = state.getItemCount();
-            mPendingScrollPosition = 0 == itemsCount ? INVALID_POSITION : Math.max(0, Math.min(itemsCount - 1, mPendingScrollPosition));
-        }
-        if (INVALID_POSITION != mPendingScrollPosition) {
-            mLayoutHelper.mScrollOffset = calculateScrollForSelectingPosition(mPendingScrollPosition, state);
-            mPendingScrollPosition = INVALID_POSITION;
-            mPendingCarouselSavedState = null;
-        } else if (null != mPendingCarouselSavedState) {
-            mLayoutHelper.mScrollOffset = calculateScrollForSelectingPosition(mPendingCarouselSavedState.mCenterItemPosition, state);
-            mPendingCarouselSavedState = null;
-        } else if (state.didStructureChange() && INVALID_POSITION != mCenterItemPosition) {
-            mLayoutHelper.mScrollOffset = calculateScrollForSelectingPosition(mCenterItemPosition, state);
-        }
-
-        fillData(recycler, state, childMeasuringNeeded);
+        fillData(recycler, state);
     }
 
-    private int calculateScrollForSelectingPosition(final int itemPosition, final RecyclerView.State state) {
-        final int fixedItemPosition = itemPosition < state.getItemCount() ? itemPosition : state.getItemCount() - 1;
+    /**
+     * 作者　　: 李坤
+     * 创建时间: 2017/8/2 0002 21:19
+     * <p>
+     * 方法功能：计算中间距离指定目标的向量给滚动用的
+     * ，距离当前position左边为负数，右边为正数
+     */
+    @Override
+    public PointF computeScrollVectorForPosition(final int targetPosition) {
+        if (0 == getChildCount()) {
+            return null;
+        }
+        final float directionDistance = getScrollDirection(targetPosition);
+        final int direction = (int) -Math.signum(directionDistance);
+        if (HORIZONTAL == mOrientation) {
+            return new PointF(direction, 0);
+        } else {
+            return new PointF(0, direction);
+        }
+    }
+
+    private int calculateScrollForSelectingPosition(final int itemPosition) {
+        final int fixedItemPosition = itemPosition < getItemCount() ? itemPosition : getItemCount() - 1;
         return fixedItemPosition * (VERTICAL == mOrientation ? mDecoratedChildHeight : mDecoratedChildWidth);
     }
 
-    private void fillData(@NonNull final RecyclerView.Recycler recycler, @NonNull final RecyclerView.State state, final boolean childMeasuringNeeded) {
+    private void fillData(@NonNull final RecyclerView.Recycler recycler, @NonNull final RecyclerView.State state) {
         final float currentScrollPosition = getCurrentScrollPosition();
         generateLayoutOrder(currentScrollPosition, state);
         detachAndScrapAttachedViews(recycler);
@@ -396,13 +381,11 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         final int width = getWidthNoPadding();
         final int height = getHeightNoPadding();
         if (VERTICAL == mOrientation) {
-            fillDataVertical(recycler, width, height, childMeasuringNeeded);
+            fillDataVertical(recycler, width, height);
         } else {
-            fillDataHorizontal(recycler, width, height, childMeasuringNeeded);
+            fillDataHorizontal(recycler, width, height);
         }
-
         recycler.clear();
-
         detectOnItemSelectionChanged(currentScrollPosition, state);
     }
 
@@ -427,7 +410,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         }
     }
 
-    private void fillDataVertical(final RecyclerView.Recycler recycler, final int width, final int height, final boolean childMeasuringNeeded) {
+    private void fillDataVertical(final RecyclerView.Recycler recycler, final int width, final int height) {
         final int start = (width - mDecoratedChildWidth) / 2;
         final int end = start + mDecoratedChildWidth;
 
@@ -438,29 +421,26 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
             final int offset = getCardOffsetByPositionDiff(layoutOrder.mItemPositionDiff);
             final int top = centerViewTop + offset;
             final int bottom = top + mDecoratedChildHeight;
-            fillChildItem(start, top, end, bottom, layoutOrder, recycler, i, childMeasuringNeeded);
+            fillChildItem(start, top, end, bottom, layoutOrder, recycler, i);
         }
     }
 
-    private void fillDataHorizontal(final RecyclerView.Recycler recycler, final int width, final int height, final boolean childMeasuringNeeded) {
+    private void fillDataHorizontal(final RecyclerView.Recycler recycler, final int width, final int height) {
         final int top = (height - mDecoratedChildHeight) / 2;
         final int bottom = top + mDecoratedChildHeight;
-
         final int centerViewStart = (width - mDecoratedChildWidth) / 2;
-        Log.e("aaaa", "mLayoutHelper.mLayoutOrder.length =" + mLayoutHelper.mLayoutOrder.length);
         for (int i = 0, count = mLayoutHelper.mLayoutOrder.length; i < count; ++i) {
             final LayoutOrder layoutOrder = mLayoutHelper.mLayoutOrder[i];
             final int offset = getCardOffsetByPositionDiff(layoutOrder.mItemPositionDiff);
             final int left = centerViewStart + offset;
             final int right = left + mDecoratedChildWidth;
-            fillChildItem(left, top, right, bottom, layoutOrder, recycler, i, childMeasuringNeeded);
+            fillChildItem(left, top, right, bottom, layoutOrder, recycler, i);
         }
     }
 
 
-    @SuppressWarnings("MethodWithTooManyParameters")
-    private void fillChildItem(final int left, final int top, final int right, final int bottom, @NonNull final LayoutOrder layoutOrder, @NonNull final RecyclerView.Recycler recycler, final int i, final boolean childMeasuringNeeded) {
-        final View view = bindChild(layoutOrder.mItemAdapterPosition, recycler, childMeasuringNeeded);
+    private void fillChildItem(final int left, final int top, final int right, final int bottom, @NonNull final LayoutOrder layoutOrder, @NonNull final RecyclerView.Recycler recycler, final int i) {
+        final View view = bindChild(layoutOrder.mItemAdapterPosition, recycler);
         ViewCompat.setElevation(view, i);
         ItemTransformation transformation = null;
         if (null != mViewOnLayout) {
@@ -471,17 +451,15 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         } else {
             view.layout(Math.round(left + transformation.mTranslationX), Math.round(top + transformation.mTranslationY),
                     Math.round(right + transformation.mTranslationX), Math.round(bottom + transformation.mTranslationY));
-
-            ViewCompat.setScaleX(view, transformation.mScaleX);
-            ViewCompat.setScaleY(view, transformation.mScaleY);
+            view.setScaleX(transformation.mScaleX);
+            view.setScaleY(transformation.mScaleY);
         }
     }
 
     /**
-     * @return current scroll position of center item. this value can be in any range if it is cycle layout.
-     * if this is not, that then it is in [0, {@link #mItemsCount - 1}]
+     * 当前滚动到的位置(小数,类似进度)
      */
-    private float getCurrentScrollPosition() {
+    protected float getCurrentScrollPosition() {
         final int fullScrollSize = getMaxScrollOffset();
         if (0 == fullScrollSize) {
             return 0;
@@ -490,21 +468,21 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * @return maximum scroll value to fill up all items in layout. Generally this is only needed for non cycle layouts.
+     * @return 最大滚动值，以填充布局中的所有项目。通常，这只需要非周期布局。
      */
     private int getMaxScrollOffset() {
         return getScrollItemSize() * (mItemsCount - 1);
     }
 
     /**
-     * Because we can support old Android versions, we should layout our children in specific order to make our center view in the top of layout
-     * (this item should layout last). So this method will calculate layout order and fill up {@link #mLayoutHelper} object.
-     * This object will be filled by only needed to layout items. Non visible items will not be there.
+     * 因为我们可以支持旧的Android版本，所以我们应该将我们的孩子按照特定的顺序进行布局，使我们的中心视图位于布局的顶部
+     * (此项目应排在最后)。因此这个方法将计算布局顺序并填充{@link #mLayoutHelper}对象。
+     * 此对象将由只需要布局的项目填充。不可见的项目将不会在那里。
      *
-     * @param currentScrollPosition current scroll position this is a value that indicates position of center item
-     *                              (if this value is int, then center item is really in the center of the layout, else it is near state).
-     *                              Be aware that this value can be in any range is it is cycle layout
-     * @param state                 Transient state of RecyclerView
+     * @param currentScrollPosition 当前滚动位置这是一个值，指示中心项目的位置
+     *                              (如果此值为int，那么center项实际上位于布局的中心，否则它接近状态)。
+     *                              请注意，这个值可以在任何范围内，它是循环布局
+     * @param state                 回收视图的瞬态状态
      * @see #getCurrentScrollPosition()
      */
     private void generateLayoutOrder(final float currentScrollPosition, @NonNull final RecyclerView.State state) {
@@ -513,8 +491,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         final int centerItem = Math.round(absCurrentScrollPosition);
 
         if (mIsLooper && 1 < mItemsCount) {
-            final int layoutCount = Math.min(mLayoutHelper.mMaxVisibleItems, mItemsCount);//
-
+            final int layoutCount = Math.min(mLayoutHelper.mMaxVisibleItems, mItemsCount);
             mLayoutHelper.initLayoutOrder(layoutCount);
 
             final int countLayoutHalf = layoutCount / 2;
@@ -557,7 +534,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         return getHeight() - getPaddingEnd() - getPaddingStart();
     }
 
-    private View bindChild(final int position, @NonNull final RecyclerView.Recycler recycler, final boolean childMeasuringNeeded) {
+    private View bindChild(final int position, @NonNull final RecyclerView.Recycler recycler) {
         final View view = recycler.getViewForPosition(position);
 
         addView(view);
@@ -566,20 +543,6 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         return view;
     }
 
-    /**
-     * Called during {@link #fillData(RecyclerView.Recycler, RecyclerView.State, boolean)} to calculate item offset from layout center line. <br />
-     * <br />
-     * Returns {@link #convertItemPositionDiffToSmoothPositionDiff(float)} * (size off area above center item when it is on the center). <br />
-     * Sign is: plus if this item is bellow center line, minus if not<br />
-     * <br />
-     * ----- - area above it<br />
-     * ||||| - center item<br />
-     * ----- - area bellow it (it has the same size as are above center item)<br />
-     *
-     * @param itemPositionDiff current item difference with layout center line. if this is 0, then this item center is in layout center line.
-     *                         if this is 1 then this item is bellow the layout center line in the full item size distance.
-     * @return offset in scroll px coordinates.
-     */
     protected int getCardOffsetByPositionDiff(final float itemPositionDiff) {
         final double smoothPosition = convertItemPositionDiffToSmoothPositionDiff(itemPositionDiff);
 
@@ -589,33 +552,15 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         } else {
             dimenDiff = (getWidthNoPadding() - mDecoratedChildWidth) / 4;
         }
-        //noinspection NumericCastThatLosesPrecision
         return (int) Math.round(Math.signum(itemPositionDiff) * dimenDiff * smoothPosition);
     }
 
-    /**
-     * Called during {@link #getCardOffsetByPositionDiff(float)} for better item movement. <br/>
-     * Current implementation speed up items that are far from layout center line and slow down items that are close to this line.
-     * This code is full of maths. If you want to make items move in a different way, probably you should override this method.<br />
-     * Please see code comments for better explanations.
-     *
-     * @param itemPositionDiff current item difference with layout center line. if this is 0, then this item center is in layout center line.
-     *                         if this is 1 then this item is bellow the layout center line in the full item size distance.
-     * @return smooth position offset. needed for scroll calculation and better user experience.
-     * @see #getCardOffsetByPositionDiff(float)
-     */
-    @SuppressWarnings({"MagicNumber", "InstanceMethodNamingConvention"})
-    protected double convertItemPositionDiffToSmoothPositionDiff(final float itemPositionDiff) {
-        // generally item moves the same way above center and bellow it. So we don't care about diff sign.
-        final float absIemPositionDiff = Math.abs(itemPositionDiff);
 
-        // we detect if this item is close for center or not. We use (1 / maxVisibleItem) ^ (1/3) as close definer.
+    protected double convertItemPositionDiffToSmoothPositionDiff(final float itemPositionDiff) {
+        final float absIemPositionDiff = Math.abs(itemPositionDiff);
         if (absIemPositionDiff > StrictMath.pow(1.0f / mLayoutHelper.mMaxVisibleItems, 1.0f / 3)) {
-            // this item is far from center line, so we should make it move like square root function
             return StrictMath.pow(absIemPositionDiff / mLayoutHelper.mMaxVisibleItems, 1 / 2.0f);
         } else {
-            // this item is close from center line. we should slow it down and don't make it speed up very quick.
-            // so square function in range of [0, (1/maxVisible)^(1/3)] is quite good in it;
             return StrictMath.pow(absIemPositionDiff, 2.0f);
         }
     }
@@ -625,9 +570,9 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
      */
     protected int getScrollItemSize() {
         if (VERTICAL == mOrientation) {
-            return mDecoratedChildHeight;
+            return mDecoratedChildHeight == null ? 0 : mDecoratedChildHeight;
         } else {
-            return mDecoratedChildWidth;
+            return mDecoratedChildWidth == null ? 0 : mDecoratedChildWidth;
         }
     }
 
@@ -653,31 +598,73 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * @return Scroll offset from nearest item from center
+     * @return 距离中心的【偏移量
      */
     protected int getOffsetCenterView() {
         return Math.round(getCurrentScrollPosition()) * getScrollItemSize() - mLayoutHelper.mScrollOffset;
+    }
+
+
+    public boolean getCurrentScrollPositionQuyu() {
+        if (getScrollItemSize() == 0) {
+            return true;
+        }
+        return mLayoutHelper.mScrollOffset % getScrollItemSize() == 0;
     }
 
     /**
      * 作者　　: 李坤
      * 创建时间: 2017/8/2 0002 21:12
      * <p>
-     * 方法功能：计算view距离中间的大小
+     * 方法功能：计算滑动到指定view需要的距离
      */
-
     protected int getOffsetForCurrentView(@NonNull final View view) {
         final int targetPosition = getPosition(view);
-        final float directionDistance = getScrollDirection(targetPosition);//获取滚动的个数
+        int pendingScrollOffset = getScrollItemSize() * targetPosition;
+        return pendingScrollOffset - mLayoutHelper.mScrollOffset;
+    }
+
+    /**
+     * 作者　　: 李坤
+     * 创建时间: 2017/8/2 0002 21:12
+     * <p>
+     * 方法功能：计算view距离中间的大小,给滚动用的
+     */
+    protected int getOffsetForCurrentView2(@NonNull final View view) {
+        final int targetPosition = getPosition(view);
+        //获取滚动的进度
+        final float directionDistance = getScrollDirection(targetPosition);
         return Math.round(directionDistance * getScrollItemSize());
     }
 
     /**
-     * Helper method that make scroll in range of [0, count). Generally this method is needed only for cycle layout.
+     * 作者　　: 李坤
+     * 创建时间: 2017/8/2 0002 21:21
+     * <p>
+     * 方法功能：计算中间距离指定目标的距离
+     */
+    private float getScrollDirection(final int targetPosition) {
+        final float currentScrollPosition = makeScrollPositionInRange0ToCount(getCurrentScrollPosition(), mItemsCount);
+
+        if (mIsLooper) {
+            final float t1 = currentScrollPosition - targetPosition;
+            final float t2 = Math.abs(t1) - mItemsCount;
+            if (Math.abs(t1) > Math.abs(t2)) {
+                return Math.signum(t1) * t2;
+            } else {
+                return t1;
+            }
+        } else {
+            return currentScrollPosition - targetPosition;
+        }
+    }
+
+    /**
+     * 帮助方法，使滚动范围在[0，计数]。通常这种方法只适用于循环布局。
      *
-     * @param currentScrollPosition any scroll position range.
-     * @param count                 adapter items count
-     * @return good scroll position in range of [0, count)
+     * @param currentScrollPosition 任何滚动位置范围。
+     * @param count                 适配器的物品数
+     * @return 在[0, count]范围内的良好滚动位置
      */
     private static float makeScrollPositionInRange0ToCount(float currentScrollPosition, final int count) {
         while (0 > currentScrollPosition) {
@@ -691,29 +678,22 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
 
 
     /**
-     * This interface methods will be called for each visible view item after general LayoutManager layout finishes. <br />
-     * <br />
-     * Generally this method should be used for scaling and translating view item for better (different) view presentation of layouting.
+     * 在LayoutManager布局完成后，将为每个可见视图项调用此接口方法
      */
-
-
     public interface OnCenterItemSelectionListener {
 
         /**
-         * Listener that will be called on every change of center item.
-         * This listener will be triggered on <b>every</b> layout operation if item was changed.
-         * Do not do any expensive operations in this method since this will effect scroll experience.
-         *
-         * @param adapterPosition current layout center item
+         * 侦听器，该侦听器将在中心项的每次更改时调用。
+         * 如果项目被更改，这个监听器将在<b>上触发每个</b>布局操作。
+         * 不要在这种方法中做任何昂贵的操作，因为这会影响滚动体验。
          */
         void onCenterItemChanged(final int adapterPosition);
     }
 
     /**
-     * Helper class that holds currently visible items.
-     * Generally this class fills this list. <br />
-     * <br />
-     * This class holds all scroll and maxVisible items state.
+     * 包含当前可见项的助手类。
+     * 通常这个类会填充这个列表
+     * 该类保存所有滚动项和maxVisible项状态。
      *
      * @see #getMaxVisibleItems()
      */
@@ -732,12 +712,9 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         }
 
         /**
-         * Called before any fill calls. Needed to recycle old items and init new array list. Generally this list is an array an it is reused.
-         *
-         * @param layoutCount items count that will be layout
+         * 在任何填充调用之前调用。需要回收旧的项目和初始化新的数组列表。通常这个列表是一个被重用的数组。
          */
         void initLayoutOrder(final int layoutCount) {
-            Log.e("aaaa", "layoutCount = " + layoutCount);
             if (null == mLayoutOrder || mLayoutOrder.length != layoutCount) {
                 if (null != mLayoutOrder) {
                     recycleItems(mLayoutOrder);
@@ -748,15 +725,15 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         }
 
         /**
-         * Called during layout generation process of filling this list. Should be called only after {@link #initLayoutOrder(int)} method call.
+         * 在填充此列表的布局生成过程中调用。只能在{@link #initLayoutOrder(int)}方法调用之后调用。
          *
-         * @param arrayPosition       position in layout order
-         * @param itemAdapterPosition adapter position of item for future data filling logic
-         * @param itemPositionDiff    difference of current item scroll position and center item position.
-         *                            if this is a center item and it is in real center of layout, then this will be 0.
-         *                            if current layout is not in the center, then this value will never be int.
-         *                            if this item center is bellow layout center line then this value is greater then 0,
-         *                            else less then 0.
+         * @param arrayPosition       布置位置
+         * @param itemAdapterPosition 项目的适配器位置，用于将来的数据填充逻辑
+         * @param itemPositionDiff    当前项目滚动位置和中心项目位置的差异。
+         *                            如果这是一个中心项目，它在真正的布局中心，那么这将是0。
+         *                            如果当前布局不在中心，那么这个值将永远不会是int。
+         *                            如果这个项目中心是下面的布局中心线，那么这个值大于0，
+         *                            否则小于0.
          */
         void setLayoutOrder(final int arrayPosition, final int itemAdapterPosition, final float itemPositionDiff) {
             final LayoutOrder item = mLayoutOrder[arrayPosition];
@@ -765,10 +742,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
         }
 
         /**
-         * Checks is this screen Layout has this adapterPosition view in layout
-         *
-         * @param adapterPosition adapter position of item for future data filling logic
-         * @return true is adapterItem is in layout
+         * 检查是这个屏幕布局在布局中有这个adapterPosition视图
          */
         boolean hasAdapterPosition(final int adapterPosition) {
             if (null != mLayoutOrder) {
@@ -781,10 +755,8 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
             return false;
         }
 
-        @SuppressWarnings("VariableArgumentMethod")
         private void recycleItems(@NonNull final LayoutOrder... layoutOrders) {
             for (final LayoutOrder layoutOrder : layoutOrders) {
-                //noinspection ObjectAllocationInLoop
                 mReusedItems.add(new WeakReference<>(layoutOrder));
             }
         }
@@ -813,17 +785,10 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
 
     /**
      * Class that holds item data.
-     * This class is filled during {@link #generateLayoutOrder(float, RecyclerView.State)} and used during {@link #fillData(RecyclerView.Recycler, RecyclerView.State, boolean)}
+     * This class is filled during {@link #generateLayoutOrder(float, RecyclerView.State)} and used during {@link #fillData(RecyclerView.Recycler, RecyclerView.State)}
      */
     private static class LayoutOrder {
-
-        /**
-         * Item adapter position
-         */
         private int mItemAdapterPosition;
-        /**
-         * Item center difference to layout center. If center of item is bellow layout center, then this value is greater then 0, else it is less.
-         */
         private float mItemPositionDiff;
     }
 

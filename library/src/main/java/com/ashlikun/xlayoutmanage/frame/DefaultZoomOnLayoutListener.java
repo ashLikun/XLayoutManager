@@ -1,7 +1,6 @@
 package com.ashlikun.xlayoutmanage.frame;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 
 /**
@@ -24,12 +23,10 @@ public class DefaultZoomOnLayoutListener implements OnLayoutListener {
             translateY = Math.signum(itemPositionToCenterDiff) * translateYGeneral;
             translateX = 0;
         } else {
-            Log.e("transformChild", "itemPositionToCenterDiff = " + itemPositionToCenterDiff + "   getMeasuredWidth" + child.getMeasuredWidth() + "  scale=" + scale);
             final float translateXGeneral = child.getMeasuredWidth() * (1 - scale);
             translateX = Math.signum(itemPositionToCenterDiff) * translateXGeneral;
             translateY = 0;
         }
-
         return new ItemTransformation(scale, scale, translateX, translateY);
     }
 }

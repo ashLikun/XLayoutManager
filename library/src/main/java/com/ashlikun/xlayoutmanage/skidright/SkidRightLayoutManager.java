@@ -1,6 +1,8 @@
 package com.ashlikun.xlayoutmanage.skidright;
 
-import android.support.v4.view.ViewCompat;
+import android.graphics.PointF;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -12,10 +14,10 @@ import java.util.ArrayList;
  * @author　　: 李坤
  * 创建时间: 2018/10/26 17:16
  * 邮箱　　：496546144@qq.com
- *
+ * <p>
  * 功能介绍：右边滑出的LayoutManager
  */
-public class SkidRightLayoutManager extends RecyclerView.LayoutManager {
+public class SkidRightLayoutManager extends RecyclerView.LayoutManager implements RecyclerView.SmoothScroller.ScrollVectorProvider {
     private boolean mHasChild = false;
     private int mItemViewWidth;
     private int mItemViewHeight;
@@ -94,7 +96,7 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager {
                 info.setTop((int) (remainSpace + maxOffset));
                 info.setPositionOffset(0);
                 info.setLayoutPercent(info.getTop() / space);
-                info.setScaleXY( (float) Math.pow(mScale, j - 1));
+                info.setScaleXY((float) Math.pow(mScale, j - 1));
                 break;
             }
         }
@@ -135,8 +137,8 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager {
         int top = (int) getPaddingTop();
         layoutDecoratedWithMargins(view, layoutInfo.getTop() - scaleFix, top
                 , layoutInfo.getTop() + mItemViewWidth - scaleFix, top + mItemViewHeight);
-        ViewCompat.setScaleX(view, layoutInfo.getScaleXY());
-        ViewCompat.setScaleY(view, layoutInfo.getScaleXY());
+        view.setScaleX(layoutInfo.getScaleXY());
+        view.setScaleY(layoutInfo.getScaleXY());
     }
 
     private void measureChildWithExactlySize(View child) {
@@ -152,7 +154,22 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager {
         return Math.min(Math.max(mItemViewWidth, scrollOffset), mItemCount * mItemViewWidth);
     }
 
-
+    /**
+     * 作者　　: 李坤
+     * 创建时间: 2017/8/2 0002 21:19
+     * <p>
+     * 方法功能：计算中间距离指定目标的向量给滚动用的
+     * ，距离当前position左边为负数，右边为正数
+     */
+    @Override
+    public PointF computeScrollVectorForPosition(final int targetPosition) {
+        if (0 == getChildCount()) {
+            return null;
+        }
+        final float directionDistance = calculateDistanceToPosition(targetPosition);
+        final int direction = (int) Math.signum(directionDistance);
+        return new PointF(direction, 0);
+    }
 
     @Override
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
@@ -168,6 +185,28 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager {
         return pendingScrollOffset - mScrollOffset;
     }
 
+    /**
+     * 作者　　: 李坤
+     * 创建时间: 2017/8/2 0002 21:09
+     * <p>
+     * 方法功能：平滑滚动到指定位置
+     */
+    @Override
+    public void smoothScrollToPosition(@NonNull final RecyclerView recyclerView, @NonNull final RecyclerView.State state, final int position) {
+        final LinearSmoothScroller linearSmoothScroller = new LinearSmoothScroller(recyclerView.getContext()) {
+            @Override
+            public int calculateDxToMakeVisible(final View view, final int snapPreference) {
+                //计算水平滚动的大小
+                if (!canScrollHorizontally()) {
+                    return 0;
+                }
+                //距离当前position左边为正数，右边为负数
+                return -calculateDistanceToPosition(getPosition(view));
+            }
+        };
+        linearSmoothScroller.setTargetPosition(position);
+        startSmoothScroll(linearSmoothScroller);
+    }
 
     @Override
     public void scrollToPosition(int position) {
@@ -198,7 +237,6 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager {
     public int getHorizontalSpace() {
         return getWidth() - getPaddingLeft() - getPaddingRight();
     }
-
 
 
 }
