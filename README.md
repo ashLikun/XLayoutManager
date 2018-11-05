@@ -1,40 +1,34 @@
-# **FrameLayoutManager**
-卡片布局的RecycleView to LayoutManage,类似画廊
+[![Release](https://jitpack.io/v/ashLikun/XLayoutManager.svg)](https://jitpack.io/#ashLikun/XLayoutManager)
+
+XLayoutManager项目简介
+    自定义LayoutManage
+## 使用方法
+
+build.gradle文件中添加:
+```gradle
+allprojects {
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
+}
+```
+并且:
+
+```gradle
+dependencies {
+    implementation 'com.github.ashLikun:XLayoutManager:{latest version}'
+}
+```
+
+## 详细介绍
+用法与普通的LayoutManage 相差无几
 
 
-### 1.用法
-使用前，对于Android Studio的用户，可以选择添加:
-     compile 'com.github.ashLikun:FrameLayoutManager:1.0.0'//FrameLayoutManager
+## 效果图
+| EchelonLayoutManager | PickerLayoutManager | SlideLayoutManager |
+| :----: | :---:| :---:|
+|![img1](art/img1.gif) |  ![img2](art/img2.gif) | ![img3](art/img3.gif)|
 
-     layoutManager.setOnLayoutListener(new DefaultZoomOnLayoutListener());
-     layoutManager.setMaxVisibleItems(3);
-
-     recyclerView.setLayoutManager(layoutManager);
-     // we expect only fixed sized item for now
-     recyclerView.setHasFixedSize(true);
-     // sample adapter with random data
-     recyclerView.setAdapter(adapter);
-     // enable center post scrolling
-     recyclerView.addOnScrollListener(new FrameScrollListener());
-     // enable center post touching on item and item click listener
-
-     layoutManager.setOnItemClickListener(new OnItemClickListener(recyclerView) {
-         @Override
-         protected void onCenterItemClicked(@NonNull RecyclerView recyclerView, @NonNull FrameLayoutManager carouselLayoutManager, @NonNull View v) {
-             Toast.makeText(CarouselPreviewActivity.this, "aaaaa" + carouselLayoutManager.getCenterItemPosition(), Toast.LENGTH_SHORT).show();
-         }
-     });
-     layoutManager.addOnItemSelectionListener(new FrameLayoutManager.OnCenterItemSelectionListener() {
-
-         @Override
-         public void onCenterItemChanged(final int adapterPosition) {
-             if (FrameLayoutManager.INVALID_POSITION != adapterPosition) {
-                 final int value = adapter.mPosition[adapterPosition];
-             }
-         }
-     });
-
-
-### 混肴
-####
-
+| SkidRightLayoutManager | ViewPagerLayoutManager | FrameLayouManage |
+| :---:| :---:|:---:|
+|![img4](art/img4.gif) |  ![img5](art/img5.gif) | ![img6](art/img6.gif)|

@@ -110,15 +110,14 @@ public class SlideFragment extends Fragment {
     private void addData(){
         int[] icons = {R.mipmap.header_icon_1, R.mipmap.header_icon_2, R.mipmap.header_icon_3,
                 R.mipmap.header_icon_4, R.mipmap.header_icon_1, R.mipmap.header_icon_2};
-        String[] titles = {"Acknowledging", "Belief", "Confidence", "Dreaming", "Happiness", "Confidence"};
+        String[] titles = {"第一个", "第二个", "第三个", "第四个", "第五个", "第六个"};
         String[] says = {
-                "Do one thing at a time, and do well.",
-                "Keep on going never give up.",
-                "Whatever is worth doing is worth doing well.",
-                "I can because i think i can.",
-                "Jack of all trades and master of none.",
-                "Keep on going never give up.",
-                "Whatever is worth doing is worth doing well.",
+                "一次只做一件事，做到最好!",
+                "勇往直前，决不放弃!",
+                "任何值得做的事就值得把它做好。",
+                "我能，因为我相信我能。",
+                "样样精通，样样精通。",
+                "勇往直前，决不放弃!",
         };
         int[] bgs = {
                 R.mipmap.img_slide_1,

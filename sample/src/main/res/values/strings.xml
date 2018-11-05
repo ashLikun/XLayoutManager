@@ -1,6 +1,4 @@
 <resources>
     <string name="app_name">LayoutManagerGroup</string>
-    <string name="skid_activty_2_text">Do one thing at a time, and do well.Keep on going never give up.
-        Whatever is worth doing is worth doing well.I can because i think i can.Jack of all trades and master of none.
-    Whatever is worth doing is worth doing well.Keep on going never give up.</string>
+    <string name="skid_activty_2_text">一次只做一件事，做到最好!勇往直前，决不放弃!任何值得做的事就值得把它做好。我能，因为我相信我能。样样精通，样样精通。任何值得做的事就值得把它做好。勇往直前，决不放弃!</string>
 </resources>

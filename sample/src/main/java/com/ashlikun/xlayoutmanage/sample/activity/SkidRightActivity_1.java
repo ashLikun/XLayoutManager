@@ -72,7 +72,7 @@ public class SkidRightActivity_1 extends AppCompatActivity {
                 R.mipmap.skid_right_7,
 
         };
-        String[] titles = {"1Acknowl", "2Belief", "3Confidence", "4Dreaming", "5Happiness", "6Confidence"};
+        String[] titles = {"第一个", "第二个", "第三个", "第四个", "第五个", "第六个"};
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
