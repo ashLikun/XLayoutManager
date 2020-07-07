@@ -5,7 +5,6 @@ import android.graphics.PointF;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +19,7 @@ import java.util.ArrayList;
  * <p>
  * 功能介绍：右边滑出的LayoutManager
  */
-public class SkidRightLayoutManager extends LinearLayoutManager implements RecyclerView.SmoothScroller.ScrollVectorProvider {
+public class SkidRightLayoutManager extends RecyclerView.LayoutManager implements RecyclerView.SmoothScroller.ScrollVectorProvider {
     private boolean mHasChild = false;
     private int mItemViewWidth;
     private int mItemViewHeight;
@@ -32,8 +31,6 @@ public class SkidRightLayoutManager extends LinearLayoutManager implements Recyc
     private SkidRightSnapHelper mSkidRightSnapHelper;
 
     public SkidRightLayoutManager(Context context, float mItemWidthRatio, float scale) {
-        super(context);
-        setOrientation(RecyclerView.HORIZONTAL);
         this.mItemWidthRatio = mItemWidthRatio;
         this.mScale = scale;
         mSkidRightSnapHelper = new SkidRightSnapHelper();
@@ -186,6 +183,29 @@ public class SkidRightLayoutManager extends LinearLayoutManager implements Recyc
         return mScrollOffset - pendingScrollOffset + dx;
     }
 
+    @Override
+    public int computeHorizontalScrollOffset(RecyclerView.State state) {
+        return mScrollOffset;
+    }
+
+    @Override
+    public int computeVerticalScrollOffset(RecyclerView.State state) {
+        return mScrollOffset;
+    }
+
+    @Override
+    public int computeHorizontalScrollRange(@NonNull RecyclerView.State state) {
+        return getMaxScrollOffset();
+    }
+
+    private int getMaxScrollOffset() {
+        return mItemCount * mItemViewWidth;
+    }
+
+    @Override
+    public int computeVerticalScrollRange(@NonNull RecyclerView.State state) {
+        return getMaxScrollOffset();
+    }
 
     public int calculateDistanceToPosition(int targetPos) {
         int pendingScrollOffset = mItemViewWidth * (convert2LayoutPosition(targetPos) + 1);
@@ -247,11 +267,11 @@ public class SkidRightLayoutManager extends LinearLayoutManager implements Recyc
         this.mItemWidthRatio = mItemWidthRatio;
     }
 
-    public float getmItemWidthHeightRatio() {
+    public float getItemWidthHeightRatio() {
         return mItemWidthHeightRatio;
     }
 
-    public void setmItemWidthHeightRatio(float mItemWidthHeightRatio) {
+    public void setItemWidthHeightRatio(float mItemWidthHeightRatio) {
         this.mItemWidthHeightRatio = mItemWidthHeightRatio;
     }
 }

@@ -3,7 +3,7 @@ package com.ashlikun.xlayoutmanage.echelon;
 import android.content.Context;
 import android.view.View;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * <p>
  * 功能介绍：上下叠加的梯形LayoutManage
  */
-public class EchelonLayoutManager extends LinearLayoutManager {
+public class EchelonLayoutManager extends RecyclerView.LayoutManager {
     private Context mContext;
     private int mItemViewWidth;
     private int mItemViewHeight;
@@ -24,8 +24,6 @@ public class EchelonLayoutManager extends LinearLayoutManager {
     private float mScale = 0.9f;
 
     public EchelonLayoutManager(Context context) {
-        super(context);
-        setOrientation(RecyclerView.VERTICAL);
         this.mContext = context;
         mItemViewWidth = (int) (getHorizontalSpace() * 0.87f);//item的宽
         mItemViewHeight = (int) (mItemViewWidth * 1.46f);//item的高
@@ -155,6 +153,7 @@ public class EchelonLayoutManager extends LinearLayoutManager {
     public int getHorizontalSpace() {
         return getWidth() - getPaddingLeft() - getPaddingRight();
     }
+
 
 }
 
