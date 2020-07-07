@@ -243,7 +243,6 @@ public class SkidRightLayoutManager extends LinearLayoutManager implements Recyc
     }
 
 
-
     public void setItemWidthRatio(float mItemWidthRatio) {
         this.mItemWidthRatio = mItemWidthRatio;
     }
