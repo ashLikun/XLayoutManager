@@ -3,14 +3,16 @@ package com.ashlikun.xlayoutmanage.sample;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.ashlikun.xlayoutmanage.sample.activity.FrameActivity;
 import com.ashlikun.xlayoutmanage.sample.activity.SkidRightActivity_1;
@@ -18,7 +20,6 @@ import com.ashlikun.xlayoutmanage.sample.activity.ViewPagerLayoutManagerActivity
 import com.ashlikun.xlayoutmanage.sample.fragment.EchelonFragment;
 import com.ashlikun.xlayoutmanage.sample.fragment.PickerFragment;
 import com.ashlikun.xlayoutmanage.sample.fragment.SlideFragment;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,6 @@ import java.util.List;
  * <p>
  * 功能介绍：
  */
-
 public class MainActivity extends AppCompatActivity {
     private TextView mTvTitle;
     private Toolbar mToolbar;
@@ -48,9 +48,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         mTvTitle = findViewById(R.id.tv_title);
         mFragmentManager = getSupportFragmentManager();
-
         initFragments();
-
     }
 
     private void initFragments() {

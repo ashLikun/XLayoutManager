@@ -3,50 +3,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.dingmouren.example.layoutmanagergroup.activity.ViewPagerLayoutManagerActivity">
-    <android.support.v7.widget.RecyclerView
+    android:layout_height="match_parent">
+
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="25dp"
-        android:orientation="horizontal"
         android:layout_marginTop="56dp"
-        >
+        android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_centerHorizontal="true"
-            >
+            android:orientation="horizontal">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
                 android:text="推荐"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginRight="16dp"
-                />
+                android:textStyle="bold" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="附近"
                 android:textColor="#f2f2f2"
                 android:textSize="17sp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
         </LinearLayout>
+
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/search_icon"
             android:layout_alignParentRight="true"
-            android:tint="#f2f2f2"
             android:layout_marginRight="16dp"
-            />
+            android:src="@mipmap/search_icon"
+            android:tint="#f2f2f2" />
     </RelativeLayout>
 
 
@@ -55,61 +55,60 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_above="@+id/bottom"
-        android:background="@android:color/white"
-        />
+        android:background="@android:color/white" />
+
     <LinearLayout
         android:id="@+id/bottom"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
-        >
+        android:orientation="horizontal">
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_weight="1"
-            android:textColor="@android:color/white"
+            android:gravity="center"
             android:text="首页"
+            android:textColor="@android:color/white"
             android:textSize="18sp"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textColor="#f2f2f2"
             android:text="关注"
+            android:textColor="#f2f2f2"
             android:textSize="17sp"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
+
         <ImageView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-           android:src="@mipmap/add_bg"
-            />
+            android:src="@mipmap/add_bg" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textColor="#f2f2f2"
             android:text="消息"
+            android:textColor="#f2f2f2"
             android:textSize="17sp"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textColor="#f2f2f2"
             android:text="我"
+            android:textColor="#f2f2f2"
             android:textSize="17sp"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
     </LinearLayout>
 </RelativeLayout>

@@ -2,19 +2,20 @@
 
 buildscript {
     repositories {
-        google()
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.3.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
     }
 }
 
 allprojects {
     repositories {
-        google()
         jcenter()
+        google()
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -22,14 +23,12 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 ext {
-    superVersion = "27.1.1"
-    compileSdkVersion = 27
-    buildToolsVersion = "27.0.3"
-    designVersion = "com.android.support:design:" + superVersion
-    v4Version = "com.android.support:support-v4:" + superVersion
-    v7AppCompat = "com.android.support:appcompat-v7:" + superVersion
-    recyclerview = "com.android.support:recyclerview-v7:" + superVersion
-    v13Version = "com.android.support:support-v13:" + superVersion
+    superVersion = "1.1.+"
+    compileSdkVersion = 28
+    buildToolsVersion = "28.0.3"
+    designVersion = "com.google.android.material:material:" + superVersion
+    v4Version = "androidx.legacy:legacy-support-v4:" + superVersion
+    v7AppCompat = "androidx.appcompat:appcompat:" + superVersion
     targetSdkVersion = 24
     minSdkVersion = 16
     versionCode = 1

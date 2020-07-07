@@ -4,10 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.dingmouren.example.layoutmanagergroup.MainActivity">
+    android:orientation="vertical">
    <!--actionbar-->
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
@@ -28,7 +27,7 @@
             android:textColor="@android:color/white"
             android:layout_marginLeft="?actionBarSize"
             />
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
     <FrameLayout
         android:id="@+id/container_layout"
         android:layout_width="match_parent"

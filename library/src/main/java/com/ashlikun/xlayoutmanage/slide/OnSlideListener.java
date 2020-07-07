@@ -1,6 +1,6 @@
 package com.ashlikun.xlayoutmanage.slide;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * @author　　: 李坤
