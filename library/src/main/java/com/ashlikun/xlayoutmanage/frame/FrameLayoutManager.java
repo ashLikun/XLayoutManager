@@ -78,10 +78,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/1 0001 22:28
-     * <p>
-     * 方法功能：当子view layou前,用于自定义view的布局
+     * 当子view layou前,用于自定义view的布局
      */
     public void setOnLayoutListener(@Nullable final OnLayoutListener postLayoutListener) {
         mViewOnLayout = postLayoutListener;
@@ -89,10 +86,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/1 0001 22:39
-     * <p>
-     * 方法功能：中间item选择事件
+     * 中间item选择事件
      */
     public void addOnItemSelectionListener(@NonNull final OnCenterItemSelectionListener onCenterItemSelectionListener) {
         mOnCenterItemSelectionListeners.add(onCenterItemSelectionListener);
@@ -103,10 +97,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/1 0001 22:31
-     * <p>
-     * 方法功能：最大左右上下显示的item数目
+     * 最大左右上下显示的item数目
      */
     public void setMaxVisibleItems(final int maxVisibleItems) {
         if (0 >= maxVisibleItems) {
@@ -117,10 +108,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:03
-     * <p>
-     * 方法功能：最大左右上下显示的item数目
+     * 最大左右上下显示的item数目
      */
     public int getMaxVisibleItems() {
         return mLayoutHelper.mMaxVisibleItems;
@@ -132,20 +120,14 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:03
-     * <p>
-     * 方法功能：获取方向
+     * ：获取方向
      */
     public int getOrientation() {
         return mOrientation;
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:07
-     * <p>
-     * 方法功能：是否可以水平滚动
+     * 是否可以水平滚动
      */
     @Override
     public boolean canScrollHorizontally() {
@@ -153,10 +135,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:08
-     * <p>
-     * 方法功能：是否可以垂直滚动
+     * 是否可以垂直滚动
      */
 
     @Override
@@ -165,10 +144,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:08
-     * <p>
-     * 方法功能：获取中间的item位置
+     * 获取中间的item位置
      */
 
     public int getCenterItemPosition() {
@@ -177,10 +153,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
 
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:08
-     * <p>
-     * 方法功能：滚动到指定的位置
+     * 滚动到指定的位置
      */
     @Override
     public void scrollToPosition(final int position) {
@@ -192,10 +165,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:09
-     * <p>
-     * 方法功能：平滑滚动到指定位置
+     * 平滑滚动到指定位置
      */
     @Override
     public void smoothScrollToPosition(@NonNull final RecyclerView recyclerView, @NonNull final RecyclerView.State state, final int position) {
@@ -349,10 +319,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:19
-     * <p>
-     * 方法功能：计算中间距离指定目标的向量给滚动用的
+     * 计算中间距离指定目标的向量给滚动用的
      * ，距离当前position左边为负数，右边为正数
      */
     @Override
@@ -614,10 +581,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:12
-     * <p>
-     * 方法功能：计算滑动到指定view需要的距离
+     * 计算滑动到指定view需要的距离
      */
     protected int getOffsetForCurrentView(@NonNull final View view) {
         final int targetPosition = getPosition(view);
@@ -626,10 +590,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:12
-     * <p>
-     * 方法功能：计算view距离中间的大小,给滚动用的
+     * 计算view距离中间的大小,给滚动用的
      */
     protected int getOffsetForCurrentView2(@NonNull final View view) {
         final int targetPosition = getPosition(view);
@@ -639,10 +600,7 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:21
-     * <p>
-     * 方法功能：计算中间距离指定目标的距离
+     * 计算中间距离指定目标的距离
      */
     private float getScrollDirection(final int targetPosition) {
         final float currentScrollPosition = makeScrollPositionInRange0ToCount(getCurrentScrollPosition(), mItemsCount);
@@ -689,6 +647,26 @@ public class FrameLayoutManager extends RecyclerView.LayoutManager implements Re
          * 不要在这种方法中做任何昂贵的操作，因为这会影响滚动体验。
          */
         void onCenterItemChanged(final int adapterPosition);
+    }
+
+    @Override
+    public int computeHorizontalScrollOffset(RecyclerView.State state) {
+        return mLayoutHelper.mScrollOffset;
+    }
+
+    @Override
+    public int computeVerticalScrollOffset(RecyclerView.State state) {
+        return mLayoutHelper.mScrollOffset;
+    }
+
+    @Override
+    public int computeHorizontalScrollRange(@NonNull RecyclerView.State state) {
+        return getMaxScrollOffset();
+    }
+
+    @Override
+    public int computeVerticalScrollRange(@NonNull RecyclerView.State state) {
+        return getMaxScrollOffset();
     }
 
     /**
