@@ -31,10 +31,10 @@ public class SkidRightLayoutManager extends LinearLayoutManager implements Recyc
     private int mItemCount;
     private SkidRightSnapHelper mSkidRightSnapHelper;
 
-    public SkidRightLayoutManager(Context context, float itemWidthHeightRatio, float scale) {
+    public SkidRightLayoutManager(Context context, float mItemWidthRatio, float scale) {
         super(context);
         setOrientation(RecyclerView.HORIZONTAL);
-        this.mItemWidthHeightRatio = itemWidthHeightRatio;
+        this.mItemWidthRatio = mItemWidthRatio;
         this.mScale = scale;
         mSkidRightSnapHelper = new SkidRightSnapHelper();
     }
@@ -243,7 +243,16 @@ public class SkidRightLayoutManager extends LinearLayoutManager implements Recyc
     }
 
 
+
     public void setItemWidthRatio(float mItemWidthRatio) {
         this.mItemWidthRatio = mItemWidthRatio;
+    }
+
+    public float getmItemWidthHeightRatio() {
+        return mItemWidthHeightRatio;
+    }
+
+    public void setmItemWidthHeightRatio(float mItemWidthHeightRatio) {
+        this.mItemWidthHeightRatio = mItemWidthHeightRatio;
     }
 }
