@@ -185,12 +185,12 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager implement
 
     @Override
     public int computeHorizontalScrollOffset(RecyclerView.State state) {
-        return mScrollOffset;
+        return mScrollOffset <= mItemViewWidth ? 0 : mScrollOffset;
     }
 
     @Override
     public int computeVerticalScrollOffset(RecyclerView.State state) {
-        return mScrollOffset;
+        return mScrollOffset <= mItemViewWidth ? 0 : mScrollOffset;
     }
 
     @Override
