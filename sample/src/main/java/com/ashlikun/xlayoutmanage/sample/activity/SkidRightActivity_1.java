@@ -48,7 +48,7 @@ public class SkidRightActivity_1 extends AppCompatActivity {
     private void initView() {
         mRecyclerView = findViewById(R.id.recycler_view);
 
-        mSkidRightLayoutManager = new SkidRightLayoutManager(1.5f, 0.85f);
+        mSkidRightLayoutManager = new SkidRightLayoutManager(this, 0.66f, 0.85f);
         mRecyclerView.setLayoutManager(mSkidRightLayoutManager);
         mRecyclerView.setAdapter(new MyAdapter());
         findViewById(R.id.action1).setOnClickListener(new View.OnClickListener() {

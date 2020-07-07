@@ -1,9 +1,11 @@
 package com.ashlikun.xlayoutmanage.skidright;
 
+import android.content.Context;
 import android.graphics.PointF;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,18 +20,21 @@ import java.util.ArrayList;
  * <p>
  * 功能介绍：右边滑出的LayoutManager
  */
-public class SkidRightLayoutManager extends RecyclerView.LayoutManager implements RecyclerView.SmoothScroller.ScrollVectorProvider {
+public class SkidRightLayoutManager extends LinearLayoutManager implements RecyclerView.SmoothScroller.ScrollVectorProvider {
     private boolean mHasChild = false;
     private int mItemViewWidth;
     private int mItemViewHeight;
     private int mScrollOffset = Integer.MAX_VALUE;
-    private float mItemHeightWidthRatio;
+    private float mItemWidthHeightRatio;
+    private float mItemWidthRatio;
     private float mScale;
     private int mItemCount;
     private SkidRightSnapHelper mSkidRightSnapHelper;
 
-    public SkidRightLayoutManager(float itemHeightWidthRatio, float scale) {
-        this.mItemHeightWidthRatio = itemHeightWidthRatio;
+    public SkidRightLayoutManager(Context context, float itemWidthHeightRatio, float scale) {
+        super(context);
+        setOrientation(RecyclerView.HORIZONTAL);
+        this.mItemWidthHeightRatio = itemWidthHeightRatio;
         this.mScale = scale;
         mSkidRightSnapHelper = new SkidRightSnapHelper();
     }
@@ -57,7 +62,6 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager implement
         return RecyclerView.NO_POSITION;
     }
 
-
     @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
         if (state.getItemCount() == 0 || state.isPreLayout()) {
@@ -66,7 +70,12 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager implement
         removeAndRecycleAllViews(recycler);
         if (!mHasChild) {
             mItemViewHeight = getVerticalSpace();
-            mItemViewWidth = (int) (mItemViewHeight / mItemHeightWidthRatio);
+            if (mItemWidthRatio > 0) {
+                mItemViewWidth = (int) (getHorizontalSpace() * mItemWidthRatio);
+            } else {
+                mItemViewWidth = (int) (mItemViewHeight * mItemWidthHeightRatio);
+            }
+
             mHasChild = true;
         }
         mItemCount = getItemCount();
@@ -156,10 +165,7 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager implement
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:19
-     * <p>
-     * 方法功能：计算中间距离指定目标的向量给滚动用的
+     * 计算中间距离指定目标的向量给滚动用的
      * ，距离当前position左边为负数，右边为正数
      */
     @Override
@@ -187,10 +193,7 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager implement
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/8/2 0002 21:09
-     * <p>
-     * 方法功能：平滑滚动到指定位置
+     * 平滑滚动到指定位置
      */
     @Override
     public void smoothScrollToPosition(@NonNull final RecyclerView recyclerView, @NonNull final RecyclerView.State state, final int position) {
@@ -240,4 +243,7 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager implement
     }
 
 
+    public void setItemWidthRatio(float mItemWidthRatio) {
+        this.mItemWidthRatio = mItemWidthRatio;
+    }
 }
