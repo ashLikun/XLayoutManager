@@ -61,11 +61,9 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager implement
 
     @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
-        if (state.getItemCount() == 0 || state.isPreLayout()) {
-            return;
-        }
-        if (state.getItemCount() == 0) {
+        if (0 == state.getItemCount()) {
             removeAndRecycleAllViews(recycler);
+            return;
         }
         if (!mHasChild) {
             mItemViewHeight = getVerticalSpace();

@@ -119,7 +119,7 @@ public class SkidRightActivity_1 extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return 4;
+            return 2;
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
