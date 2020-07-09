@@ -3,7 +3,6 @@ package com.ashlikun.xlayoutmanage.echelon;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -40,7 +39,9 @@ public class EchelonLayoutManager extends RecyclerView.LayoutManager {
         if (state.getItemCount() == 0 || state.isPreLayout()) {
             return;
         }
-        removeAndRecycleAllViews(recycler);
+        if (state.getItemCount() == 0) {
+            removeAndRecycleAllViews(recycler);
+        }
 
         mItemViewWidth = (int) (getHorizontalSpace() * 0.87f);
         mItemViewHeight = (int) (mItemViewWidth * 1.46f);

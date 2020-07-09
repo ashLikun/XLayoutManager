@@ -64,7 +64,9 @@ public class SkidRightLayoutManager extends RecyclerView.LayoutManager implement
         if (state.getItemCount() == 0 || state.isPreLayout()) {
             return;
         }
-        removeAndRecycleAllViews(recycler);
+        if (state.getItemCount() == 0) {
+            removeAndRecycleAllViews(recycler);
+        }
         if (!mHasChild) {
             mItemViewHeight = getVerticalSpace();
             if (mItemWidthRatio > 0) {
